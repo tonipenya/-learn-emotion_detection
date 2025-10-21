@@ -1,0 +1,57 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build web app",
+            "type": "shell",
+            "command": "bash ${workspaceFolder}/build.sh",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true,
+                "close": true
+            },
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "Serve web app",
+            "dependsOn": "Build web app",
+            "dependsOrder": "sequence",
+            "type": "shell",
+            "command": "python3 -m http.server 8000 -d app & echo $! > .server.pid && wait $!",
+            "isBackground": true,
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true,
+                "close": true,
+            },
+            "problemMatcher": {
+                "owner": "custom",
+                "pattern": {
+                    "regexp": "."
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".",
+                    "endsPattern": "Serving HTTP on :: port"
+                }
+            }
+        },
+        {
+            "label": "Stop web app",
+            "type": "shell",
+            "command": "kill $(cat .server.pid) && rm .server.pid",
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared",
+                "clear": true,
+                "close": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}

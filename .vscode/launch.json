@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Open app in Chrome",
+            "url": "http://localhost:8000",
+            "webRoot": "${workspaceFolder}/static",
+            "preLaunchTask": "Serve web app",
+            "postDebugTask": "Stop web app",
+            "runtimeExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+            "userDataDir": "${workspaceFolder}/.vscode/chrome",
+            "presentation": {
+                "reveal": "silent"
+            }
+        }
+    ]
+}
