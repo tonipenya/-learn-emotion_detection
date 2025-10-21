@@ -26,6 +26,9 @@
         const canvas = document.getElementById("buf");
         const ctx = canvas.getContext("2d");
 
+        const dataURL = canvas.toDataURL("image/png");
+        document.getElementById("captured").src = dataURL;
+
         // draw current frame
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         const { data, width, height } = ctx.getImageData(
