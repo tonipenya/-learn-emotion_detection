@@ -18,3 +18,9 @@ canvas {
 #captured {
     transform: scaleX(-1);
 }
+
+#cam,
+#captured {
+    width: "320";
+    height: "240";
+}

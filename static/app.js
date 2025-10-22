@@ -1,6 +1,17 @@
+import { classifyEmotion } from "./emotionClassifier.js";
+import { detectFaces } from "./faceDetector.js";
+
+const BOX_COLORS = [
+    "#FF00FF", // angry
+    "#00FFFF", // disgust
+    "#FF0000", // fear
+    "#FFFF00", // happy
+    "#FF8800", // neutral
+    "#00FF00", // sad
+    "#0000FF", // surprise
+];
+
 (async () => {
-    const MODEL_URL = "model.onnx";
-    // 1) init webcam
     const video = document.getElementById("cam");
     const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
@@ -8,63 +19,35 @@
     });
     video.srcObject = stream;
 
-    // 2) load model
-    const session = await ort.InferenceSession.create(MODEL_URL, {
-        executionProviders: ["wasm"],
-    });
-
-    // helper: softmax
-    function softmax(arr) {
-        const max = Math.max(...arr);
-        const exps = arr.map((x) => Math.exp(x - max));
-        const sum = exps.reduce((a, b) => a + b, 0);
-        return exps.map((x) => x / sum);
-    }
-
-    // 3) capture + run
     document.getElementById("capture").onclick = async () => {
-        const canvas = document.getElementById("buf");
+        const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Detect faces
+        const boxes = await detectFaces(
+            ctx.getImageData(0, 0, canvas.width, canvas.height)
+        );
+
+        const emotions = [];
+        for (const box of boxes) {
+            const emotion = await classifyEmotion(
+                ctx.getImageData(box.x0, box.y0, box.width, box.height)
+            );
+            emotions.push(emotion);
+        }
+
+        // // Draw boxes around faces
+        ctx.lineWidth = 2;
+
+        for (let i = 0; i < boxes.length; i++) {
+            const box = boxes[i];
+            const emotion = await emotions[i];
+            ctx.strokeStyle = BOX_COLORS[emotion];
+            ctx.strokeRect(box.x0, box.y0, box.width, box.height);
+        }
 
         const dataURL = canvas.toDataURL("image/png");
         document.getElementById("captured").src = dataURL;
-
-        // draw current frame
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const { data, width, height } = ctx.getImageData(
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-
-        // pack to Float32Array [1,3,H,W] with values in [0,255]
-        const size = width * height;
-        const tensorData = new Float32Array(3 * size);
-        let rOff = 0,
-            gOff = size,
-            bOff = 2 * size;
-        for (let i = 0; i < size; i++) {
-            const j = i * 4; // RGBA
-            tensorData[rOff + i] = data[j];
-            tensorData[gOff + i] = data[j + 1];
-            tensorData[bOff + i] = data[j + 2];
-        }
-
-        const inputTensor = new ort.Tensor("float32", tensorData, [
-            1,
-            3,
-            height,
-            width,
-        ]);
-
-        const outputs = await session.run({ input: inputTensor });
-        const logits = outputs.logits.data; // Float32Array
-        const probs = softmax(Array.from(logits));
-        const pred = probs.indexOf(Math.max(...probs));
-
-        console.log("logits:", Array.from(logits));
-        console.log("probs:", probs);
-        console.log("predicted_class_index:", pred);
     };
 })();
