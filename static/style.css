@@ -1,26 +1,18 @@
 body {
-    font-family: system-ui, sans-serif;
     margin: 24px;
 }
 
-video,
-canvas,
 button {
     display: block;
     margin-top: 12px;
 }
 
-canvas {
-    display: none;
+#cam {
+    visibility: hidden;
+    width: 0px;
+    height: 0px;
 }
 
-#cam,
 #captured {
     transform: scaleX(-1);
-}
-
-#cam,
-#captured {
-    width: "320";
-    height: "240";
 }

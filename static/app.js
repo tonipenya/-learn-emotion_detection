@@ -11,6 +11,57 @@ const BOX_COLORS = [
     "#0000FF", // surprise
 ];
 
+async function loop(fn, fpsLimit = 30) {
+    const frameDuration = 1000 / fpsLimit;
+
+    while (true) {
+        const t0 = performance.now();
+
+        await fn();
+
+        const elapsed = performance.now() - t0;
+        const wait = frameDuration - elapsed;
+        if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+    }
+}
+
+async function processFrame() {
+    const video = document.getElementById("cam");
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+
+    // Detect faces
+    const boxes = await detectFaces(
+        ctx.getImageData(0, 0, video.videoWidth, video.videoHeight)
+    );
+    // Classify each face
+    const emotions = [];
+    for (const box of boxes) {
+        const emotion = await classifyEmotion(
+            ctx.getImageData(box.x0, box.y0, box.width, box.height)
+        );
+        emotions.push(emotion);
+    }
+
+    // // Draw boxes around faces
+    ctx.lineWidth = 2;
+    for (let i = 0; i < boxes.length; i++) {
+        const box = boxes[i];
+        const emotion = await emotions[i];
+        ctx.strokeStyle = BOX_COLORS[emotion];
+        ctx.strokeRect(box.x0, box.y0, box.width, box.height);
+    }
+
+    // Update output
+    const dataURL = canvas.toDataURL("image/png");
+    const img = document.getElementById("captured");
+    img.src = dataURL;
+    await new Promise((r) => (img.onload = r)); // wait until rendered
+}
+
 (async () => {
     const video = document.getElementById("cam");
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -19,35 +70,5 @@ const BOX_COLORS = [
     });
     video.srcObject = stream;
 
-    document.getElementById("capture").onclick = async () => {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        // Detect faces
-        const boxes = await detectFaces(
-            ctx.getImageData(0, 0, canvas.width, canvas.height)
-        );
-
-        const emotions = [];
-        for (const box of boxes) {
-            const emotion = await classifyEmotion(
-                ctx.getImageData(box.x0, box.y0, box.width, box.height)
-            );
-            emotions.push(emotion);
-        }
-
-        // // Draw boxes around faces
-        ctx.lineWidth = 2;
-
-        for (let i = 0; i < boxes.length; i++) {
-            const box = boxes[i];
-            const emotion = await emotions[i];
-            ctx.strokeStyle = BOX_COLORS[emotion];
-            ctx.strokeRect(box.x0, box.y0, box.width, box.height);
-        }
-
-        const dataURL = canvas.toDataURL("image/png");
-        document.getElementById("captured").src = dataURL;
-    };
+    document.getElementById("capture").onclick = async () => loop(processFrame, 30);
 })();
