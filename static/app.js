@@ -12,12 +12,13 @@ const BOX_COLORS = [
 ];
 
 const EMOTION_EMOJIS = [
-    "😠", // angry
+    "😡", // anger
+    "😒", // contempt
     "🤢", // disgust
-    "😨", // fear
-    "😄", // happy
-    "😐", // neutral
-    "😢", // sad
+    "😱", // fear
+    "😊", // happiness
+    "😊", // neutral
+    "😊", // sadness
     "😲", // surprise
 ];
 

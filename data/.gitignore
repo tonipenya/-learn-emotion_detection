@@ -1,2 +1,3 @@
-model.pt
-raw
+*
+!model.onnx
+!ultraface-RFB-320.onnx
