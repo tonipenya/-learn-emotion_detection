@@ -1,0 +1,57 @@
+schema: '2.0'
+stages:
+  train:
+    cmd: "papermill -p epochs 40 -p oversampling_strength 0.5 -p loss_weight_strength
+      0.3 -p experiment_family complex_augmentation notebook.ipynb out/notebook.ipynb\n"
+    deps:
+    - path: data/ferplus
+      hash: md5
+      md5: 7daefad73c8cdd4a0ee369bf88570afc.dir
+      size: 86432916
+      nfiles: 35713
+    - path: notebook.ipynb
+      hash: md5
+      md5: 29ba936ef9de1e5d870a93b7e38b2370
+      size: 21370
+    params:
+      params.yaml:
+        epochs: 40
+        loss_weight_strength: 0.3
+        oversampling_strength: 0.5
+    outs:
+    - path: data/basemodel.onnx
+      hash: md5
+      md5: c3f4823d694db08e125afe76ae7c1385
+      size: 1713797
+    - path: data/model.onnx
+      hash: md5
+      md5: 792643b3c5681b9cff14d3cb21e13da9
+      size: 1728964
+    - path: data/model.pt
+      hash: md5
+      md5: 904ae2fa48e4cf08f0ac903cb48775aa
+      size: 1696273
+    - path: test.json
+      hash: md5
+      md5: 01eff70c0a0a89dd7cfc660c6d4c630b
+      size: 1142
+    - path: train.json
+      hash: md5
+      md5: a72d1f823c3ed5ff1ea35ef008c70c98
+      size: 1158
+  generate_assets:
+    cmd: "rm -rf static/assets && mkdir static/assets && cp data/model.onnx static/assets/
+      && cp data/basemodel.onnx static/assets/ && cp data/ultraface-RFB-320.onnx static/assets/\n"
+    deps:
+    - path: data/basemodel.onnx
+      hash: md5
+      md5: c3f4823d694db08e125afe76ae7c1385
+      size: 1713797
+    - path: data/model.onnx
+      hash: md5
+      md5: 792643b3c5681b9cff14d3cb21e13da9
+      size: 1728964
+    - path: data/ultraface-RFB-320.onnx
+      hash: md5
+      md5: 1456b253b02dcd6a0e02a6d8ad69b136
+      size: 1270727

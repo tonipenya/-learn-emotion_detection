@@ -46,7 +46,7 @@ class EmotionClassifier {
     }
 }
 
-const MODEL_URL = "model.onnx";
+const MODEL_URL = "assets/basemodel.onnx";
 const session = await ort.InferenceSession.create(MODEL_URL, {
     executionProviders: ["wasm"],
 });

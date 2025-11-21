@@ -163,7 +163,7 @@ class FaceDetector {
     }
 }
 
-const MODEL_URL = "ultraface-RFB-320.onnx";
+const MODEL_URL = "assets/ultraface-RFB-320.onnx";
 const session = await ort.InferenceSession.create(MODEL_URL, {
     executionProviders: ["wasm"],
 });

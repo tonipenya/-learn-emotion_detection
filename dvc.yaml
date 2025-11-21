@@ -1,0 +1,37 @@
+stages:
+  train:
+    cmd: >
+      papermill
+      -p epochs ${epochs}
+      -p oversampling_strength ${oversampling_strength}
+      -p loss_weight_strength ${loss_weight_strength}
+      notebook.ipynb
+      out/notebook.ipynb
+    deps:
+      - data/ferplus
+      - notebook.ipynb
+    params:
+      - epochs
+      - loss_weight_strength
+      - oversampling_strength
+    outs:
+      - data/basemodel.onnx
+      - data/model.onnx
+      - data/model.pt
+    metrics:
+      - train.json:
+          cache: false
+      - test.json:
+          cache: false
+
+  generate_assets:
+    cmd: >
+      rm -rf static/assets &&
+      mkdir static/assets &&
+      cp data/model.onnx static/assets/ &&
+      cp data/basemodel.onnx static/assets/ &&
+      cp data/ultraface-RFB-320.onnx static/assets/
+    deps:
+      - data/model.onnx
+      - data/basemodel.onnx
+      - data/ultraface-RFB-320.onnx
