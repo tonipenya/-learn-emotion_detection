@@ -5,6 +5,7 @@ stages:
       -p epochs ${epochs}
       -p oversampling_strength ${oversampling_strength}
       -p loss_weight_strength ${loss_weight_strength}
+      -p experiment_family ${experiment_family}
       notebook.ipynb
       out/notebook.ipynb
     deps:
