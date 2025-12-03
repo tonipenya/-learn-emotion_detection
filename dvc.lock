@@ -11,8 +11,8 @@ stages:
       nfiles: 35715
     - path: notebook.ipynb
       hash: md5
-      md5: 26ccad05ced2943cf90a1ad3829fda29
-      size: 22960
+      md5: 1f61cbdcf96020fdaea3a72f433f3586
+      size: 24534
     params:
       params.yaml:
         epochs: 40
@@ -21,35 +21,35 @@ stages:
     outs:
     - path: data/basemodel.onnx
       hash: md5
-      md5: 939c61217ece1bfb109b094e39ea6bb8
+      md5: 22d7e7c1a0508051677a9eb92b31b04a
       size: 1713797
     - path: data/model.onnx
       hash: md5
-      md5: 232b2028557c5f24fc12dc627fa3777e
+      md5: 78cc7f71746e611d48cfd98abc96042a
       size: 1728964
     - path: data/model.pt
       hash: md5
-      md5: ada630a8c8e71f470914f3274d6d9e91
+      md5: 5626873b15c5702de32e0099bb48ba57
       size: 1696273
     - path: metrics/test.json
       hash: md5
-      md5: e35f8fb497f7c482e98b19590a34b284
-      size: 1105
+      md5: 8e2b0062dba23ea76711d45e55faedaf
+      size: 1113
     - path: metrics/train.json
       hash: md5
-      md5: 1685208ca06a227f082df040e399704f
-      size: 1089
+      md5: ef0aa9db8f4526ebc9aa5c4a2e491e30
+      size: 1088
   generate_assets:
     cmd: "rm -rf static/assets && mkdir static/assets && cp data/model.onnx static/assets/
       && cp data/basemodel.onnx static/assets/ && cp data/ultraface-RFB-320.onnx static/assets/\n"
     deps:
     - path: data/basemodel.onnx
       hash: md5
-      md5: 939c61217ece1bfb109b094e39ea6bb8
+      md5: 22d7e7c1a0508051677a9eb92b31b04a
       size: 1713797
     - path: data/model.onnx
       hash: md5
-      md5: 232b2028557c5f24fc12dc627fa3777e
+      md5: 78cc7f71746e611d48cfd98abc96042a
       size: 1728964
     - path: data/ultraface-RFB-320.onnx
       hash: md5
