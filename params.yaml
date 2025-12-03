@@ -1,4 +1,4 @@
 epochs: 40
 oversampling_strength: 0.5
 loss_weight_strength: 0.3
-experiment_family: "focal_loss"
+experiment_family: "soft_target"

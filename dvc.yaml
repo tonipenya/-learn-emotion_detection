@@ -1,14 +1,4 @@
 stages:
-  prepare_data:
-    cmd: >
-      papermill
-      ferplus_data_preparation.ipynb
-      out/ferplus_data_preparation.ipynb
-    deps:
-      - data/ferplus_raw
-      - data/fer2013new.csv
-    outs:
-      - data/ferplus
   train:
     cmd: >
       papermill
@@ -19,7 +9,8 @@ stages:
       notebook.ipynb
       out/notebook.ipynb
     deps:
-      - data/ferplus
+      - data/ferplus_raw
+      - data/fer2013new.csv
       - notebook.ipynb
     params:
       - epochs
