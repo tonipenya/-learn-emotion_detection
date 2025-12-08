@@ -6,23 +6,35 @@ stages:
       -p oversampling_strength ${oversampling_strength}
       -p loss_weight_strength ${loss_weight_strength}
       -p experiment_family ${experiment_family}
-      notebook.ipynb
-      out/notebook.ipynb
+      train.ipynb
+      out/train.ipynb
     deps:
+      - src
+      - train.ipynb
       - data/ferplus_raw
       - data/fer2013new.csv
-      - notebook.ipynb
     params:
       - epochs
       - loss_weight_strength
       - oversampling_strength
     outs:
-      - data/basemodel.onnx
-      - data/model.onnx
       - data/model.pt
+      - data/model.onnx
     metrics:
       - metrics/train.json:
           cache: false
+  test:
+    cmd: >
+      papermill
+      test.ipynb
+      out/test.ipynb
+    deps:
+      - src
+      - test.ipynb
+      - data/model.pt
+      - data/ferplus_raw
+      - data/fer2013new.csv
+    metrics:
       - metrics/test.json:
           cache: false
 
@@ -31,11 +43,9 @@ stages:
       rm -rf static/assets &&
       mkdir static/assets &&
       cp data/model.onnx static/assets/ &&
-      cp data/basemodel.onnx static/assets/ &&
       cp data/ultraface-RFB-320.onnx static/assets/
     deps:
       - data/model.onnx
-      - data/basemodel.onnx
       - data/ultraface-RFB-320.onnx
 
 plots:

@@ -2,7 +2,7 @@ schema: '2.0'
 stages:
   train:
     cmd: "papermill -p epochs 40 -p oversampling_strength 0.5 -p loss_weight_strength
-      0.3 -p experiment_family soft_target notebook.ipynb out/notebook.ipynb\n"
+      0.3 -p experiment_family soft_target train.ipynb out/train.ipynb\n"
     deps:
     - path: data/fer2013new.csv
       hash: md5
@@ -13,48 +13,41 @@ stages:
       md5: c1e362d46b29e52b02f2c96a2ae4bc84.dir
       size: 86418200
       nfiles: 35710
-    - path: notebook.ipynb
+    - path: src
       hash: md5
-      md5: c97083d8749db6d04f49f50dfd03613e
-      size: 28315
+      md5: f95d85780131079ae415502faee2a6e5.dir
+      size: 8095
+      nfiles: 4
+    - path: train.ipynb
+      hash: md5
+      md5: b5accf6d8736d7691c83623814b8c88a
+      size: 15816
     params:
       params.yaml:
         epochs: 40
         loss_weight_strength: 0.3
         oversampling_strength: 0.5
     outs:
-    - path: data/basemodel.onnx
-      hash: md5
-      md5: d980937642bbe4deb513a101eb5830bc
-      size: 1713773
     - path: data/model.onnx
       hash: md5
-      md5: caf16b33167c7e9cb93267ec597c8172
-      size: 1728907
+      md5: 65048a956d6342fbd1f133923ed09feb
+      size: 1713797
     - path: data/model.pt
       hash: md5
-      md5: 92539e036e0032dcaf0d972148ed56ae
-      size: 1696273
-    - path: metrics/test.json
-      hash: md5
-      md5: 510d61e2032e40d761499efe8bdec6e1
-      size: 1070
+      md5: ed8375d6004053b7945e4920016bd443
+      size: 1713357
     - path: metrics/train.json
       hash: md5
-      md5: 4b76c754c19d86879b726f3ee5571da1
-      size: 1061
+      md5: a9ed1a812acb1ec11275316256172303
+      size: 1034
   generate_assets:
     cmd: "rm -rf static/assets && mkdir static/assets && cp data/model.onnx static/assets/
-      && cp data/basemodel.onnx static/assets/ && cp data/ultraface-RFB-320.onnx static/assets/\n"
+      && cp data/ultraface-RFB-320.onnx static/assets/\n"
     deps:
-    - path: data/basemodel.onnx
-      hash: md5
-      md5: d980937642bbe4deb513a101eb5830bc
-      size: 1713773
     - path: data/model.onnx
       hash: md5
-      md5: caf16b33167c7e9cb93267ec597c8172
-      size: 1728907
+      md5: 65048a956d6342fbd1f133923ed09feb
+      size: 1713797
     - path: data/ultraface-RFB-320.onnx
       hash: md5
       md5: 1456b253b02dcd6a0e02a6d8ad69b136
@@ -77,3 +70,33 @@ stages:
       md5: 4457842dba9952606cb95c2343a29374.dir
       size: 86420620
       nfiles: 35711
+  test:
+    cmd: "papermill test.ipynb out/test.ipynb\n"
+    deps:
+    - path: data/fer2013new.csv
+      hash: md5
+      md5: 413eba86d6e454536b99705b8c7fc5c5
+      size: 1602762
+    - path: data/ferplus_raw
+      hash: md5
+      md5: c1e362d46b29e52b02f2c96a2ae4bc84.dir
+      size: 86418200
+      nfiles: 35710
+    - path: data/model.pt
+      hash: md5
+      md5: ed8375d6004053b7945e4920016bd443
+      size: 1713357
+    - path: src
+      hash: md5
+      md5: f95d85780131079ae415502faee2a6e5.dir
+      size: 8095
+      nfiles: 4
+    - path: test.ipynb
+      hash: md5
+      md5: 5e0b7bdd173c04c2b33afb55a525560b
+      size: 3849
+    outs:
+    - path: metrics/test.json
+      hash: md5
+      md5: 3a5b4af7b9027b036597f95d2a1df989
+      size: 1105

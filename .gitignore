@@ -1,6 +1,8 @@
 .python-version
 .DS_Store
 .server.pid
+*.pyc
+node_modules
 app
 out
 runs
