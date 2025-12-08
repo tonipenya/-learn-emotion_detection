@@ -15,8 +15,8 @@ stages:
       nfiles: 35710
     - path: src
       hash: md5
-      md5: f95d85780131079ae415502faee2a6e5.dir
-      size: 8095
+      md5: 44beefdfc3ec80853fd394ef68bd4d1e.dir
+      size: 8303
       nfiles: 4
     - path: train.ipynb
       hash: md5
@@ -30,25 +30,34 @@ stages:
     outs:
     - path: data/model.onnx
       hash: md5
-      md5: 65048a956d6342fbd1f133923ed09feb
+      md5: 6592f340d63d39423e01b1f7e4ba9b26
       size: 1713797
     - path: data/model.pt
       hash: md5
-      md5: ed8375d6004053b7945e4920016bd443
+      md5: 9c069b33909b0f9cadf5e7fcadc7f899
       size: 1713357
     - path: metrics/train.json
       hash: md5
-      md5: a9ed1a812acb1ec11275316256172303
-      size: 1034
+      md5: 671945bcf68bc7c2e305c8bb73d4278b
+      size: 1091
   generate_assets:
     cmd: "rm -rf static/assets && mkdir static/assets && cp data/model.onnx static/assets/
       && cp data/ultraface-RFB-320.onnx static/assets/\n"
     deps:
     - path: data/model.onnx
       hash: md5
-      md5: 65048a956d6342fbd1f133923ed09feb
+      md5: 6592f340d63d39423e01b1f7e4ba9b26
       size: 1713797
     - path: data/ultraface-RFB-320.onnx
+      hash: md5
+      md5: 1456b253b02dcd6a0e02a6d8ad69b136
+      size: 1270727
+    outs:
+    - path: static/assets/model.onnx
+      hash: md5
+      md5: 6592f340d63d39423e01b1f7e4ba9b26
+      size: 1713797
+    - path: static/assets/ultraface-RFB-320.onnx
       hash: md5
       md5: 1456b253b02dcd6a0e02a6d8ad69b136
       size: 1270727
@@ -84,19 +93,68 @@ stages:
       nfiles: 35710
     - path: data/model.pt
       hash: md5
-      md5: ed8375d6004053b7945e4920016bd443
+      md5: 9c069b33909b0f9cadf5e7fcadc7f899
       size: 1713357
+    - path: data/test_predictions.csv
+      hash: md5
+      md5: bbb861b3a0ab404657f75c4254d4e8a4
+      size: 67931
     - path: src
       hash: md5
-      md5: f95d85780131079ae415502faee2a6e5.dir
-      size: 8095
+      md5: 44beefdfc3ec80853fd394ef68bd4d1e.dir
+      size: 8303
       nfiles: 4
     - path: test.ipynb
       hash: md5
-      md5: 5e0b7bdd173c04c2b33afb55a525560b
-      size: 3849
+      md5: b4c84561f10d03b69ccdf2a899ec8566
+      size: 4195
     outs:
     - path: metrics/test.json
       hash: md5
-      md5: 3a5b4af7b9027b036597f95d2a1df989
-      size: 1105
+      md5: 50d1d7ba79eed5963aedd7d3dd4f00a0
+      size: 1071
+  generate_js_predictions:
+    cmd: "node node_emotion_classifier.mjs\n"
+    deps:
+    - path: data/ferplus_raw
+      hash: md5
+      md5: c1e362d46b29e52b02f2c96a2ae4bc84.dir
+      size: 86418200
+      nfiles: 35710
+    - path: data/model.onnx
+      hash: md5
+      md5: 6592f340d63d39423e01b1f7e4ba9b26
+      size: 1713797
+    - path: node_emotion_classifier.mjs
+      hash: md5
+      md5: 1063aeec2a90c4dc9a41529d9361c9fd
+      size: 3066
+    - path: static/assets/model.onnx
+      hash: md5
+      md5: 6592f340d63d39423e01b1f7e4ba9b26
+      size: 1713797
+    - path: static/emotionClassifier.js
+      hash: md5
+      md5: f778529c4366c52c91c4bf5b6698f925
+      size: 4127
+    outs:
+    - path: data/node_predictions.csv
+      hash: md5
+      md5: 0e93dc03cc468e415ee9c009165964f2
+      size: 60760
+  validate_js_predictions:
+    cmd: papermill validate_js_predictions.ipynb 
+      out/validate_js_predictions.ipynb
+    deps:
+    - path: data/node_predictions.csv
+      hash: md5
+      md5: 0e93dc03cc468e415ee9c009165964f2
+      size: 60760
+    - path: data/test_predictions.csv
+      hash: md5
+      md5: bbb861b3a0ab404657f75c4254d4e8a4
+      size: 67931
+    - path: validate_js_predictions.ipynb
+      hash: md5
+      md5: dfc34e8896eb42fd8102b8a00368651b
+      size: 1994

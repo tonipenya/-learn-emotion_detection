@@ -34,9 +34,26 @@ stages:
       - data/model.pt
       - data/ferplus_raw
       - data/fer2013new.csv
+      - data/test_predictions.csv
     metrics:
       - metrics/test.json:
           cache: false
+  generate_js_predictions:
+    cmd: >
+      node node_emotion_classifier.mjs
+    deps:
+      - data/ferplus_raw
+      - node_emotion_classifier.mjs
+      - static/emotionClassifier.js
+      - static/assets/model.onnx
+    outs:
+      - data/node_predictions.csv
+  validate_js_predictions:
+    cmd: papermill validate_js_predictions.ipynb out/validate_js_predictions.ipynb
+    deps:
+      - validate_js_predictions.ipynb
+      - data/test_predictions.csv
+      - data/node_predictions.csv
 
   generate_assets:
     cmd: >
@@ -47,6 +64,11 @@ stages:
     deps:
       - data/model.onnx
       - data/ultraface-RFB-320.onnx
+    outs:
+      - static/assets/model.onnx:
+          cache: false
+      - static/assets/ultraface-RFB-320.onnx:
+          cache: false
 
 plots:
   - losses:

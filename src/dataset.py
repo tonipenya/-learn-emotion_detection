@@ -44,9 +44,10 @@ class FERPlusDataset(Dataset):
             "PrivateTest": "FER2013Test",
         }
         split_path = split_to_path[split]
+        self.image_names = [filename for filename in df["Image name"].tolist()]
         self.images = [
             Image.open(Path(img_root) / split_path / filename).convert("RGB")
-            for filename in df["Image name"].tolist()
+            for filename in self.image_names
         ]
 
         # Follows order in FER+ csv
