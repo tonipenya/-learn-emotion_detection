@@ -18,16 +18,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Run build script
-        run: ./build.sh
-
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: app
+          path: static
 
       - name: Deploy to GitHub Pages
         id: deployment

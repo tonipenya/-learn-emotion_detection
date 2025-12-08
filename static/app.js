@@ -1,25 +1,15 @@
 import { classifyEmotion } from "./emotionClassifier.js";
 import { detectFaces } from "./faceDetector.js";
 
-const BOX_COLORS = [
-    "#FF00FF", // angry
-    "#00FFFF", // disgust
-    "#FF0000", // fear
-    "#FFFF00", // happy
-    "#FF8800", // neutral
-    "#00FF00", // sad
-    "#0000FF", // surprise
-];
-
-const EMOTION_EMOJIS = [
+const EMOTION_EMOJIS = [ // Follows order in FER+ csv
+    "😐", // neutral
+    "😊", // happiness
+    "😲", // surprise
+    "😭", // sadness
     "😡", // anger
-    "😒", // contempt
     "🤢", // disgust
     "😱", // fear
-    "😊", // happiness
-    "😊", // neutral
-    "😊", // sadness
-    "😲", // surprise
+    "😒", // contempt
 ];
 
 async function loop(fn, fpsLimit = 30) {
@@ -47,6 +37,11 @@ function draw(emoji, ctx, box) {
 }
 
 async function processFrame() {
+    const frameTrace = {
+        boxes: [],
+        boxesImageData: [],
+        emotions: [],
+    };
     const video = document.getElementById("cam");
     const canvas = document.createElement("canvas");
     canvas.width = video.videoWidth;
@@ -58,14 +53,17 @@ async function processFrame() {
     const boxes = await detectFaces(
         ctx.getImageData(0, 0, video.videoWidth, video.videoHeight)
     );
+    frameTrace.boxes = boxes;
+
     // Classify each face
     const emotions = [];
     for (const box of boxes) {
-        const emotion = await classifyEmotion(
-            ctx.getImageData(box.x0, box.y0, box.width, box.height)
-        );
+        const imageData = ctx.getImageData(box.x0, box.y0, box.width, box.height);
+        const emotion = await classifyEmotion(imageData);
         emotions.push(emotion);
+        frameTrace.boxesImageData.push(imageData);
     }
+    frameTrace.emotions = emotions;
 
     // // Draw boxes around faces
     for (let i = 0; i < boxes.length; i++) {
@@ -79,6 +77,7 @@ async function processFrame() {
     const img = document.getElementById("captured");
     img.src = dataURL;
     await new Promise((r) => (img.onload = r)); // wait until rendered
+    return frameTrace;
 }
 
 (async () => {
@@ -90,4 +89,22 @@ async function processFrame() {
     video.srcObject = stream;
 
     document.getElementById("capture").onclick = async () => loop(processFrame, 30);
+
+    function debugImageData(imageData) {
+        // Create a canvas dynamically
+        const canvas = document.createElement("canvas");
+        canvas.width = imageData.width;
+        canvas.height = imageData.height;
+        canvas.style.border = "1px solid #aaa";
+        document.body.appendChild(canvas);
+
+        const ctx = canvas.getContext("2d");
+        ctx.putImageData(imageData, 0, 0);
+    }
+
+    document.getElementById("sample").onclick = async () => {
+        const trace = await processFrame();
+        debugImageData(trace.boxesImageData[0]);
+        console.log(trace);
+    };
 })();
